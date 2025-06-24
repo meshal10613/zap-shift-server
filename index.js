@@ -3,7 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const port = process.env.port || 3000;
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 //middleware
 app.use(cors());
@@ -37,8 +37,18 @@ async function run() {
 
         // parcelCollection
         app.get("/parcels", async(req, res) => {
-            const result = await parcelCollection.find().toArray();
-            res.send(result);
+            try{
+                const {email} = req.query;
+                const query = email ? { created_by: email } : {};
+                const options = {
+                    sort: { creation_date: -1 } //sort by latest first
+                }
+                const result = await parcelCollection.find(query, options).toArray();
+                res.send(result);
+            }catch(error){
+                console.log("Error inserting percel:", error);
+                res.status(500).send({ message: "Failed to get percel" })
+            }
         });
 
         app.post("/parcels", async(req, res) => {
@@ -50,6 +60,13 @@ async function run() {
                 console.log("Error inserting percel:", error);
                 res.status(500).send({ message: "Failed to create a percel" })
             }
+        });
+
+        app.delete("/parcels/:id", async(req, res) => {
+            const {id} = req.params;
+            const query = { _id: new ObjectId(id) }
+            const result = await parcelCollection.deleteOne(query);
+            res.send(result);
         });
 
     } finally {
