@@ -33,7 +33,8 @@ const verifyFirebaseToken = async(req, res, next) => {
     }
 };
 
-const serviceAccount = require("./firebase-admin-key.json");
+const decocded = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT, 'base64').toString("utf-8");
+const serviceAccount = JSON.parse(decocded);
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
