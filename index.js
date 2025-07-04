@@ -238,6 +238,26 @@ async function run() {
             }
         });
 
+        app.get("/parcels/delivery/status-count", async(req, res) => {
+            const pipeline = [
+                {
+                    $group: {
+                        _id: "$delivery_status",
+                        count: {$sum: 1}
+                    }
+                },
+                {
+                    $project: {
+                        status: "$_id",
+                        count: 1,
+                        _id: 0
+                    }
+                }
+            ];
+            const result = await parcelCollection.aggregate(pipeline).toArray();
+            res.send(result);
+        });
+
         app.post("/parcels", async(req, res) => {
             try{
                 const newParcel = req.body;
