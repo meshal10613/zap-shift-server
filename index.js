@@ -1,4 +1,4 @@
-require("dotenv").config();
+dotenv.config();
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -6,7 +6,6 @@ const port = process.env.port || 3000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const stripe = require("stripe")(process.env.PAYMENT_SECRET_KEY);
 var admin = require("firebase-admin");
-const { initializeApp } = require('firebase-admin/app');
 
 
 //middleware
